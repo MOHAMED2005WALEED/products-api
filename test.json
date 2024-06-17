@@ -13,4 +13,32 @@
         "createdDate": "2022.02.24"
     },
     "id": 65
+},
+
+{
+    "name":"A.D.Lakith Dharmasiri",
+    "address":"No 324/A Ra De Mel Road, Colombo",
+    "email":"lakith@gmail.com",
+    "dateOfBirth":"1991.02.25",
+    "gender":"female",
+    "age":"28",
+    "cardHolderName":"A.D.L.Dharmasiri",
+    "cardNumber":"102445217895",
+    "expirytDate":"12/2022",
+    "cvv":"246",
+    "timeStamp":"2022-12-31 23:59:59"
+},
+
+{
+    "name":"H.P Dasun Sucharith Pathinayake",
+    "address":"No 324/A Ra De Mel Road, Colombo",
+    "email":"dasun@gmail.com",
+    "dateOfBirth":"1991.02.25",
+    "gender":"male",
+    "age":"28",
+    "cardHolderName":"A.D.L.Dharmasiri",
+    "cardNumber":"102445217895",
+    "expirytDate":"12/2022",
+    "cvv":"246",
+    "timeStamp":"2022-12-31 23:59:59"
 }

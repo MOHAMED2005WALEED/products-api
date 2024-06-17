@@ -6,6 +6,7 @@ var bodyParser = require("body-parser");
 const { request, response } = require("express");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 let HTTP_PORT = 8080
 const cors = require('cors');
 app.use(cors({
@@ -124,21 +125,6 @@ app.post("/api/products/", (req, res, next) => {
 
         var sql = 'INSERT INTO products (productName, description, category, brand, expiredDate, manufacturedDate, batchNumber, unitPrice, quantity, createdDate) VALUES (?,?,?,?,?,?,?,?,?,?)'
         var params = [productName, description, category, brand, expiredDate, manufacturedDate, batchNumber, unitPrice, quantity, createdDate]
-        const { name, 
-            address, 
-            email, 
-            dateOfBirth, 
-            gender, 
-            age, 
-            cardHolderName, 
-            cardNumber, 
-            expiryDate, 
-            cvv,
-            timeStamp
-          } = req.body;
-
-        var sql = 'INSERT INTO customer (name, address, email, dateOfBirth, gender, age, cardHolderName, cardNumber, expiryDate, cvv,timeStamp) VALUES (?,?,?,?,?,?,?,?,?,?,?)'
-        var params = [name, address, email, dateOfBirth, gender, age, cardHolderName, cardNumber, expiryDate, cvv,timeStamp]
         db.run(sql, params, function (err, result) {
 
             if (err) {
@@ -147,14 +133,14 @@ app.post("/api/products/", (req, res, next) => {
             } else {
                 res.json({
                     "message": "success",
-                    "message": "customer $name has registered",
                     "data": req.body,
                     "id": this.lastID
-                    "customerId": this.lastID
                 })
             }
 
-@@ -144,26 +60,24 @@ app.post("/api/products/", (req, res, next) => {
+        });
+    } catch (E) {
+        res.status(400).send(E);
     }
 });
 
@@ -174,58 +160,73 @@ app.put("/api/products/", (req, res, next) => {
         unitPrice,
         quantity,
         createdDate
-        customerId,
-        name,
-        address, 
-        email, 
-        dateOfBirth, 
-        gender, 
-        age, 
-        cardHolderName, 
-        cardNumber, 
-        expiryDate, 
-        cvv,
-        timeStamp
     } = req.body;
 
     db.run(`UPDATE products set productName = ?, description = ?, category = ?, brand = ?,expiredDate=?,manufacturedDate=?,batchNumber=?,unitPrice=?,quantity=?,createdDate=? WHERE id = ?`,
         [productName, description, category, brand, expiredDate, manufacturedDate, batchNumber, unitPrice, quantity, createdDate, id],
-    db.run(`UPDATE customer. set name = ?, address = ?, email = ?, dateOfBirth = ?, gender=?,age=?,cardHolderName=?,cardNumber=?,expiryDate=?,cvv=?,timeStamp=? WHERE customerId = ?`,
-        [name,address,email,dateOfBirth,gender,age,cardHolderName,cardNumber,expiryDate,cvv,timeStamp,customerId],
         function (err, result) {
             if (err) {
                 res.status(400).json({ "error": res.message })
-@@ -177,7 +91,7 @@ app.put("/api/products/", (req, res, next) => {
+                return;
+            }
+            res.status(200).json({ updated: this.changes });
+        });
+});
+
+
 app.delete("/api/products/delete/:id", (req, res, next) => {
     try {
         db.run(
             'DELETE FROM products WHERE id = ?',
-            'DELETE FROM customer WHERE customerId = ?',
             req.params.id,
             function (err, result) {
                 if (err) {
-@@ -194,7 +108,7 @@ app.delete("/api/products/delete/:id", (req, res, next) => {
+                    res.status(400).json({ "error": res.message })
+                    return;
+                }
+                res.json({ "message": "deleted", rows: this.changes })
+            });
+    } catch (E) {
+        res.status(400).send(E);
+    }
+});
+
 app.delete("/api/products/deleteAll/:id", (req, res, next) => {
     try {
         db.run(
             'DELETE FROM products WHERE id > ?',
-            'DELETE FROM customer WHERE customerId = ?',
             req.params.id,
             function (err, result) {
                 if (err) {
-@@ -209,9 +123,9 @@ app.delete("/api/products/deleteAll/:id", (req, res, next) => {
+                    res.status(400).json({ "error": res.message })
+                    return;
+                }
+                res.json({ "message": "deleted", rows: this.changes })
+            });
+    } catch (E) {
+        res.status(400).send(E);
+    }
 });
 
 
 app.get("/api/suppliers/", (req, res, next) => {
-app.get("/api/products/", (req, res, next) => {
     try {
         var sql = "select * from suppliers"
-        var sql = "select * from customer"
         var params = []
         db.all(sql, params, (err, rows) => {
             if (err) {
-@@ -230,61 +144,7 @@ app.get("/api/suppliers/", (req, res, next) => {
+                res.status(400).json({ "error": err.message });
+                return;
+            }
+            res.json({
+                "message": "success",
+                "data": rows
+            })
+        });
+    } catch (E) {
+        res.status(400).send(E);
+    }
+
 });
 
 
@@ -282,9 +283,49 @@ app.delete("/api/suppliers/deleteAll/:id", (req, res, next) => {
     }
 });
 
+app.post("/api/customer/", (req, res, next) => {
+
+    try {
+        var errors = []
+
+        if (!req.body) {
+            errors.push("An invalid input");
+        }
+
+        const { name,
+            address,
+            email,
+            dateOfBirth,
+            gender,
+            age,
+            cardHolderName,
+            cardNumber,
+            expirytDate,
+            cvv,
+            timeStamp
+        } = req.body;
+
+        var sql = 'INSERT INTO customer (name, address, email, dateOfBirth, gender, age, cardHolderName, cardNumber, expirytDate, cvv, timeStamp) VALUES (?,?,?,?,?,?,?,?,?,?,?)'
+        var params = [name, address, email, dateOfBirth, gender, age, cardHolderName, cardNumber, expirytDate, cvv, timeStamp]
+        db.run(sql, params, function (err, result) {
+
+            if (err) {
+                res.status(400).json({ "error": err.message })
+                return;
+            } else {
+                res.json({
+                    "message": "success %NAME% has registered".replace("%NAME%", req.body.name),
+                    "customerId": this.lastID
+                })
+            }
+
+        });
+    } catch (E) {
+        res.status(400).send(E);
+    }
+});
 
 // Root path
 app.get("/", (req, res, next) => {
     res.json({ "message": "University of Moratuwa" })
-});
 });
